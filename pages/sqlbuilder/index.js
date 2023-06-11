@@ -1,54 +1,51 @@
-import Link from 'next/link'
+import { useState } from 'react'
+
 const SqlBuilder = () => {
-  const [sqlbuilder, setSqlbuilder] = useState([])
-  const sql = async () => {
+  const [query, setQuery] = useState([])
+  const [result, setResult] = useState('');
+  const Querybuild = async () => {
     try {
       const res = await fetch("http://localhost:3001/api/sql",{
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({queries})
-      });
+      body: JSON.stringify({queries: query })
+    });
+    console.log(JSON.stringify({queries: query }));
       
-      if(!response.ok){
+      if(!res.ok){
         throw new Error('Failed to fetch!');
       }
-      const result = await res.json();
-      setSqlbuilder(result);
-      console.log(result);
+      const data = await res.json();
+      console.log(JSON.stringify({queries: query }));
+      setResult(data);
+      console.log(data);
     } catch (err) {
       console.error(err.message);
+      setResult(err.message);
     }
   };
 
-  useEffect(() => {
-    SqlBuilder();
-  }, []);
+  const handleSubmitQuery = (e) => {
+    e.preventDefault();
+    Querybuild();
+  };
 
   return (
-    <div className="px-[200px] bg-white w-full min-h-screen">
-        <h1 className=" text-black text-center">
-        Good Reading Bookstore
-        </h1>
-        <div className="flex flex-col gap-[50px]">
-        <div className="bg-red-400 rounded-[50px] w-full px-[100px] justify-around flex flex-row">
-            <Link href="/">
-            <button className="hover:text-black focus:underline focus:text-black">BOOK</button>
-            </Link>
-            <Link href="/sqlbuilder">
-            <div>SQL BUILDER</div>
-            </Link>
-        </div>
-        <h1>SQL BUILDER</h1>
-            <form>
-            <input
-                type="text"
-                placeholder="write your query here"
-                className="input-lg w-full rounded-lg"
-            />
+    <div >
+        <h1 className='text-black text-center font-bold text-xl'>SQL BUILDER</h1>
+            <form onSubmit={handleSubmitQuery}>
+              <textarea
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  type="text"
+                  placeholder="write your query here"
+                  className="input-lg w-full rounded-lg p-4"
+              ></textarea>
+              <button className="btn btn-primary" type="submit">Execute</button>
             </form>
-            <button className="btn btn-primary">Execute</button>
-            <textarea readonly className='rounded-lg p-[20px]'>{sqlbuilder}</textarea>
-        </div>
+            <div>
+              <pre className=' bg-[#403c3c] text-white w-full h-[500px] overflow-auto rounded-lg p-8'>{JSON.stringify(result, null, 2)}</pre>
+            </div>
     </div>
   )
 }
