@@ -50,7 +50,7 @@ const Edit = ({table}) => {
               })
             }
           );
-    
+          console.log(body);
           setIsUpdate(false);
           router.refresh();
           setModal(false);
@@ -71,7 +71,6 @@ const Edit = ({table}) => {
         onChange={handleChange}
         className="modal-toggle"
       />
-
       <div className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Edit {table.title}</h3>
@@ -87,11 +86,31 @@ const Edit = ({table}) => {
               />
             </div>
             <div className="form-control">
+              <label className="label font-bold">Publication Year</label>
+              <input
+                type="text"
+                value={publication_year}
+                onChange={(e) => setPublication_year(e.target.value)}
+                className="input w-full input-bordered"
+                placeholder="publication_year"
+              />
+            </div>
+            <div className="form-control">
+              <label className="label font-bold">Pages</label>
+              <input
+                type="text"
+                value={pages}
+                onChange={(e) => setPages(e.target.value)}
+                className="input w-full input-bordered"
+                placeholder="pages"
+              />
+            </div>
+            <div className="form-control">
               <label className="label font-bold">Price</label>
               <input
                 type="text"
                 value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => setPrice(e.target.value)}
                 className="input w-full input-bordered"
                 placeholder="Price"
               />
