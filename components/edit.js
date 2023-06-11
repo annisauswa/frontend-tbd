@@ -1,87 +1,120 @@
-import { useState } from "react";
+import { useState, SyntheticEvent } from "react";
+import { useRouter } from "next/navigation";
 
-const Edit = ({book}) => {
-    const [title, setTitle] = useState(book.title);
-    const updateTitle = async e => {
+const Edit = ({table}) => {
+    // const [title, setTitle] = useState(book.title);
+    // const updateTitle = async e => {
+    //     e.preventDefault();
+    //     try {
+    //       const body = { title, auth_id, publication_year, pages, price, pub_id };
+    //       const response = await fetch(
+    //         `http://localhost:3001/book/${book.id}`,
+    //         {
+    //           method: "PUT",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify(body)
+    //         }
+    //       );
+    
+    //       window.location = "/";
+    //     } catch (err) {
+    //       console.error(err.message);
+    //     }
+    //   };
+
+  const [title, setTitle] = useState(table.title);
+  const [publication_year, setPublication_year] = useState(table.publication_year);
+  const [pages, setPages] = useState(table.pages);
+  const [price, setPrice] = useState(table.price);
+
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  const router = useRouter();
+
+  const updateTitle = async e => {
         e.preventDefault();
-        try {
-          const body = { title, auth_id, publication_year, pages, price, pub_id };
+        setIsUpdate(true);
+        // try {
+          // const body = { title, publication_year, pages, price};
           const response = await fetch(
-            `http://localhost:3001/book/${book.id}`,
+            `http://localhost:3001/book/${table.id}`,
             {
-              method: "PUT",
+              method: "PATCH",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body)
+              body: JSON.stringify({
+                title: title,
+                publication_year: publication_year,
+                pages: pages,
+                price: price
+              })
             }
           );
     
-          window.location = "/";
-        } catch (err) {
-          console.error(err.message);
-        }
-      };
+          setIsUpdate(false);
+          router.refresh();
+          setModal(false);
+      }
 
+      function handleChange(){
+        setModal(!modal)
+      }
     return (
-        <div>
-      <button
-        type="button"
-        class="btn btn-warning"
-        data-toggle="modal"
-        data-target={`#id${book.id}`}
-      >
+      <div>
+      <button className="btn btn-info btn-sm" onClick={handleChange}>
         Edit
       </button>
-      <div
-        class="modal"
-        id={`id${book.id}`}
-        onClick={() => setTitle(book.title)}
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Update Book Data</h4>
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                onClick={() => setTitle(book.title)}
-              >
-                &times;
-              </button>
-            </div>
 
-            <div class="modal-body">
+      <input
+        type="checkbox"
+        checked={modal}
+        onChange={handleChange}
+        className="modal-toggle"
+      />
+
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Edit {table.title}</h3>
+          <form onSubmit={handleChange}>
+            <div className="form-control">
+              <label className="label font-bold">Title</label>
               <input
                 type="text"
-                className="form-control"
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
+                className="input w-full input-bordered"
+                placeholder="Product Name"
               />
             </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-dismiss="modal"
-                onClick={e => updateTitle(e)}
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger"
-                data-dismiss="modal"
-                onClick={() => setTitle(todo.title)}
-              >
-                Cancel
-              </button>
+            <div className="form-control">
+              <label className="label font-bold">Price</label>
+              <input
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="input w-full input-bordered"
+                placeholder="Price"
+              />
             </div>
-          </div>
+            <div className="modal-action">
+              <button type="button" className="btn" onClick={handleChange}>
+                Close
+              </button>
+              {!isUpdate ? (
+                <button type="submit" className="btn btn-primary">
+                  Update
+                </button>
+              ) : (
+                <button type="button" className="btn loading">
+                  Updating...
+                </button>
+              )}
+            </div>
+          </form>
         </div>
       </div>
     </div>
-    )
+  )
 };
 
 export default Edit;
