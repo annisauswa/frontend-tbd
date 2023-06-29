@@ -1,26 +1,7 @@
-import { useState, SyntheticEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Edit = ({table}) => {
-    // const [title, setTitle] = useState(book.title);
-    // const updateTitle = async e => {
-    //     e.preventDefault();
-    //     try {
-    //       const body = { title, auth_id, publication_year, pages, price, pub_id };
-    //       const response = await fetch(
-    //         `http://localhost:3001/book/${book.id}`,
-    //         {
-    //           method: "PUT",
-    //           headers: { "Content-Type": "application/json" },
-    //           body: JSON.stringify(body)
-    //         }
-    //       );
-    
-    //       window.location = "/";
-    //     } catch (err) {
-    //       console.error(err.message);
-    //     }
-    //   };
 
   const [title, setTitle] = useState(table.title);
   const [publication_year, setPublication_year] = useState(table.publication_year);
@@ -35,10 +16,9 @@ const Edit = ({table}) => {
   const updateTitle = async e => {
         e.preventDefault();
         setIsUpdate(true);
-        // try {
-          // const body = { title, publication_year, pages, price};
+        try {
           const response = await fetch(
-            `http://localhost:3001/book/${table.id}`,
+            `http://localhost:3001/api/book/${table.id}`,
             {
               method: "PATCH",
               headers: { "Content-Type": "application/json" },
@@ -46,19 +26,23 @@ const Edit = ({table}) => {
                 title: title,
                 publication_year: publication_year,
                 pages: pages,
-                price: price
+                price: price,
+                lastUpdate: new Date().toISOString()
               })
             }
           );
-          console.log(body);
           setIsUpdate(false);
           router.refresh();
           setModal(false);
-      }
+        } catch (err) {
+          console.error(err.message);
+        }
+      };
 
       function handleChange(){
         setModal(!modal)
       }
+
     return (
       <div>
       <button className="btn btn-info btn-sm" onClick={handleChange}>
@@ -73,9 +57,9 @@ const Edit = ({table}) => {
       />
       <div className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Edit {table.title}</h3>
-          <form onSubmit={handleChange}>
-            <div className="form-control">
+          <h3 className="font-bold text-lg text-white">Edit {table.title}</h3>
+          <form onSubmit={updateTitle} className="text-white">
+            <div className="form-control text-white">
               <label className="label font-bold">Title</label>
               <input
                 type="text"
