@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Edit from "../../components/edit";
 
 const Booktable = () => {
     var heading = ["id", "Title", "Author", "Publication Year", "Pages", "Price", "Publisher", "Last Update", "DML"];
-
+    const router = useRouter();
   const [books, setBooks] = useState([]);
 
   const getBook = async () => {
@@ -25,11 +26,12 @@ const Booktable = () => {
 
     const deleteBook = async id => {
         try {
-          const deleteBook = await fetch(`http://localhost:3001/book/${id}`, {
+          const deleteBook = await fetch(`http://localhost:3001/api/book/${id}`, {
             method: "DELETE"
           });
     
           setBooks(books.filter(book => book.id !== id));
+          router.refresh();
         } catch (err) {
           console.error(err.message);
         }
